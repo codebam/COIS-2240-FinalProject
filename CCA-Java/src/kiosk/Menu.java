@@ -1,31 +1,34 @@
-public class Menu{
-    public static ResultSet generateTypes(Database DB){
-        ResultSet rs;
-        Statement stmt;
+package kiosk;
+import java.sql.*;
+import java.util.ArrayList;
+
+class Menu {
+    /* Gets a list of 'types' (Breakfast, Burgers, etc.) from the Menu Table in the database */
+    static ArrayList<String> generateTypes(Database DB){
+        ArrayList<String> types = new ArrayList<>();
         try {
-            stmt = DB.createStatement();
-            String sql = "SELECT DISTINCT type FROM menu";
-            rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                types.add(rs.getString("type"));
-            }
-        } catch (SQLException e) {
-            System.out.println("Something went wrong: " + e.getMessage());
-        }
-        stmt.close();
-        return rs;
+            Statement statement = DB.makeStatement();
+            ResultSet rs = statement.executeQuery("SELECT DISTINCT type FROM menu");
+
+            while (rs.next()) { types.add(rs.getString("type")); }
+
+            statement.close();
+        } catch (SQLException e) { System.out.println("Something went wrong: " + e.getMessage()); }
+        return types;
     }
 
-    public static ResultSet rowsByType(Database DB, String type){
-        ResultSet rs;
+    static ArrayList<ArrayList<String>> rowsByType(Database DB, String type){
+        ArrayList<ArrayList<String>> rows = new ArrayList<>(3);
         try {
-            Statement stmt = DB.createStatement();
-            String sql = String.format("SELECT * FROM menu WHERE type='%s'", type);
-            rs = stmt.executeQuery(sql);
-        }catch (SQLException e){
-            System.out.println("Something went wrong: " + e.getMessage());
-        }
-        return rs;
+            Statement statement = DB.makeStatement();
+            ResultSet rs = statement.executeQuery(String.format("SELECT * FROM menu WHERE type='%s'", type));
+            while (rs.next()) {
+                rows.get(0).add(rs.getString("filename"));
+                rows.get(1).add(rs.getString("name"));
+                rows.get(2).add(((Float)rs.getFloat("price")).toString());
+            }
+        } catch (SQLException e) { System.out.println("Something went wrong: " + e.getMessage()); }
+        return rows;
     }
 
 }

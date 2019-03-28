@@ -1,43 +1,38 @@
-public class Database{
-    String filepath;
-    Connection conn;
+package kiosk;
 
-    public Database(String filepath) {
-        this.filepath = filepath;
-        connectToDB();
+import java.sql.*;
+
+/* Adapter class to access the .db file */
+class Database {
+    String filePath;
+    Connection connection;
+
+    /* Constructor */
+    Database(String filePath) {
+        this.filePath = filePath;
+        connectToDB(filePath);
     }
 
-    public void connectToDB(){
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(String.format("jdbc:sqlite:%s", filepath);
-        }
-        catch (SQLException e){
-            System.out.println("Something went wrong: " + e.getMessage());
-        }
-        this.conn = conn;
+    /* Open Connection */
+    void connectToDB(String filePath){
+        Connection connection = null;
+        try { connection = DriverManager.getConnection(filePath); }
+        catch (SQLException e){ System.out.println("Something went wrong: " + e.getMessage()); }
+
+        this.connection = connection;
     }
 
-    public static Statement createStatement() {
+    /* Close Connection */
+    void closeConnection() {
+        try { this.connection.close(); }
+        catch (SQLException e) { System.out.println("Something went wrong: " + e.getMessage()); }
+    }
+
+    Statement makeStatement() {
         Statement statement = null;
-        try {
-            statement = this.conn.createStatement();
-        }
-        catch (SQLException e) {
-            System.out.println("Something went wrong: " + e.getMessage());
-        }
+        try { statement = this.connection.createStatement(); }
+        catch (SQLException e) { System.out.println("Something went wrong: " + e.getMessage()); }
+
         return statement;
     }
-
-
-    public static void closeConnection() {
-        try {
-            this.conn.close();
-        }
-        catch (SQLException e) {
-            System.out.println("Something went wrong: " + e.getMessage());
-        }
-
-    }
-
 }
